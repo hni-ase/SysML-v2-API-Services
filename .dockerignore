@@ -1,0 +1,11 @@
+# Docker ignore file for SysML v2 API Services
+target/
+logs/
+.git/
+.gitignore
+README.md
+*.md
+*.log
+.DS_Store
+.vscode/
+.idea/
