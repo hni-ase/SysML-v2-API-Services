@@ -29,6 +29,35 @@ This pilot implementation uses PostgreSQL as the backend database. The easiest w
 - User = postgres
 - Password = mysecretpassword
 
+### Configure database connection
+Prefer environment variables (do not commit real secrets). Copy `.env.example` to `.env` and edit:
+
+```bash
+cp .env.example .env
+```
+
+| Variable | Purpose |
+| --- | --- |
+| `SYSML_JDBC_URL` | JDBC URL (host, port, database) |
+| `SYSML_JDBC_USER` | Database user |
+| `SYSML_JDBC_PASSWORD` | Database password |
+
+Local `sbt run`:
+
+```bash
+set -a && source .env && set +a
+sbt run
+```
+
+Docker image (pass the same vars at **runtime**):
+
+```bash
+docker build -t sysml-v2-api-services .
+docker run --rm -p 9000:9000 --env-file .env sysml-v2-api-services
+```
+
+In Docker Compose, set the same variables on the service (`environment:` or `env_file:`). If unset, values in `conf/META-INF/persistence.xml` are used as fallback.
+
 ### Setup Java 11
 This pilot implementation uses JDK 11 for compiling and running SysML v2 API and Services. Download and setup JDK 11 on your machine. You can use Oracle JDK 11 or OpenJDK 11.
 
