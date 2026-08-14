@@ -28,6 +28,8 @@ import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -35,10 +37,35 @@ import java.util.function.Function;
 public class HibernateManager implements JPAManager {
     public static final String PERSISTENCE_UNIT_NAME = "sysml2-hibernate";
 
+    private static final String ENV_JDBC_URL = "SYSML_JDBC_URL";
+    private static final String ENV_JDBC_USER = "SYSML_JDBC_USER";
+    private static final String ENV_JDBC_PASSWORD = "SYSML_JDBC_PASSWORD";
+
     private final EntityManagerFactory entityManagerFactory;
 
     public HibernateManager() {
-        entityManagerFactory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
+        entityManagerFactory = Persistence.createEntityManagerFactory(
+                PERSISTENCE_UNIT_NAME,
+                jdbcOverridesFromEnvironment()
+        );
+    }
+
+    /**
+     * Optional JDBC overrides from environment. When unset, values from
+     * {@code conf/META-INF/persistence.xml} are used.
+     */
+    private static Map<String, Object> jdbcOverridesFromEnvironment() {
+        Map<String, Object> overrides = new HashMap<>();
+        putIfPresent(overrides, "javax.persistence.jdbc.url", System.getenv(ENV_JDBC_URL));
+        putIfPresent(overrides, "javax.persistence.jdbc.user", System.getenv(ENV_JDBC_USER));
+        putIfPresent(overrides, "javax.persistence.jdbc.password", System.getenv(ENV_JDBC_PASSWORD));
+        return overrides;
+    }
+
+    private static void putIfPresent(Map<String, Object> target, String key, String value) {
+        if (value != null && !value.trim().isEmpty()) {
+            target.put(key, value.trim());
+        }
     }
 
     @Override
