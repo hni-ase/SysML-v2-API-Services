@@ -1,0 +1,12 @@
+.git
+.gitignore
+target
+logs
+.idea
+*.iml
+.DS_Store
+postman.json
+**/__pycache__
+.env
+.env.*
+!.env.example
